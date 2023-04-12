@@ -31,6 +31,7 @@ jobs:
         run: |
           apt update
           apt install -y make gcc
+          cd modules
           curr_loc=$(pwd)
           ERC=0
           for module in $(ls -d */)
