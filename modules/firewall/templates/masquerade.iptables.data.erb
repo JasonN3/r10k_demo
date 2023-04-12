@@ -1,0 +1,6 @@
+#!/bin/bash
+
+<% @interfaces.each do |interface| -%>
+    iptables -t nat -A POSTROUTING -o <%= interface %> -j MASQUERADE
+<% end -%>
+    

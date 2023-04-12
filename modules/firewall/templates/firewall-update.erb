@@ -1,0 +1,55 @@
+#!/bin/bash
+
+iptablesd="/etc/iptables.d"
+
+for table in filter nat mangle
+do
+    iptables -t $table -F
+    newchains=$(iptables -t $table -S | grep '\-N' | sed 's/-N//g')
+    for chain in $newchains
+    do
+        iptables -t $table -X $chain
+    done
+done
+
+iptables -A INPUT -m state --state RELATED,ESTABLISHED -j ACCEPT
+iptables -A INPUT -m state --state INVALID -j DROP
+iptables -A INPUT -i lo -j ACCEPT
+
+for file in $(ls ${iptablesd}/*.ipset.data | sort)
+do
+    chown root ${file}
+    chmod u+x ${file}
+    ${file}
+done
+
+for file in $(ls ${iptablesd}/*.iptables.data | sort)
+do
+    chown root ${file}
+    chmod u+x ${file}
+    ${file}
+done
+
+iptables -A INPUT -p tcp -s 192.168.0.0/16 --dport 22 -j ACCEPT
+iptables -A INPUT -p icmp -s 192.168.0.0/16 -j ACCEPT
+iptables -A INPUT -j DROP
+
+<% if @facts['os']['name'] == "Archlinux" %>
+service iptables save
+service ipset save
+<% elsif @facts['os']['name'] == "RedHat" %>
+service iptables save
+service ipset save
+<% elsif @facts['os']['name'] == "Ubuntu" %>
+iptables-save > /etc/iptables/rules.v4
+ipset save > /etc/iptables/ipsets
+<% else %>
+if which service
+then
+    service iptables save
+    service ipset save
+else
+    iptables-save > /etc/iptables/iptables.rules
+    ipset save > /etc/ipset.conf
+fi
+<% end %>

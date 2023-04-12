@@ -1,0 +1,5 @@
+#!/bin/bash
+
+<% @services.each do |service| -%>
+iptables -A INPUT<% if service['protocol'] -%> -p <%= service['protocol'] -%><% end -%><% if service['port'] -%> --dport <%= service['port'] -%><% end -%><% if service['source'] -%> -s <%= service['source'] -%><% end -%><% if service['destination'] -%> -d <%= service['destination'] -%><% end -%> -j ACCEPT
+<% end -%>

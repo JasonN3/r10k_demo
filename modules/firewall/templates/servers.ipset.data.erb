@@ -1,0 +1,8 @@
+ipset create <%= @group -%> hash:net -!
+ipset flush <%= @group %>
+
+<% @servers.each do |server| -%>
+# <%= server['name'] %>
+ipset add <%= @group -%> <%= server['ip'] %>
+
+<% end -%>

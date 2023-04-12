@@ -1,0 +1,14 @@
+#!/bin/bash
+
+<% @tables.each do |table| -%>
+iptables -N <%= table %>
+iptables -F <%= table %>
+<% end %>
+
+<% @rule_entries.each do |rule| -%>
+iptables -A <%= rule['table'] -%>
+<%- if rule['source'] %><% if rule['not_source'] %> !<% end %> -s <%= rule['source'] %><% end -%>
+<%- if rule['destination'] %><% if rule['not_destination'] %> !<% end %> -d <%= rule['destination'] %><% end -%>
+<%- if rule['protocol'] %> -p <%= rule['protocol'] %><% end -%>
+<%- if rule['port'] %> --dport <%= rule['port'] %><% end %> -j <%= rule['target'] %>
+<% end -%>
