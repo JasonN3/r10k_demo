@@ -1,0 +1,1 @@
+mod 'lphiri-access_insights_client', :latest
